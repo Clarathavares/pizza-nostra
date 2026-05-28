@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Nostra - Cardápio Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #2d1a0e;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fffaf5;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .header {
+            background: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .header h1 {
+            font-size: 28px;
+        }
+        .header p {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .conteudo {
+            padding: 20px;
+        }
+        .cardapio {
+            margin-bottom: 20px;
+        }
+        .pizza {
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #f0e0d0;
+        }
+        .pizza-emoji {
+            font-size: 45px;
+            background: #fef0e0;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pizza-info {
+            flex: 1;
+        }
+        .pizza-nome {
+            color: #c0392b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .pizza-preco {
+            color: #e67e22;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .pizza-desc {
+            color: #888;
+            font-size: 11px;
+        }
+        button {
+            background: #e67e22;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #d35400;
+        }
+        .btn-principal {
+            background: #e67e22;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .btn-voltar {
+            background: #95a5a6;
+        }
+        .carrinho-item {
+            background: #fef5e8;
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-remover {
+            background: #e74c3c;
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+            margin: 15px 0;
+            padding-top: 10px;
+            border-top: 2px dashed #e67e22;
+        }
+        .grupo {
+            margin-bottom: 15px;
+        }
+        .grupo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #5a2e1a;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #e0c8b0;
+            background: white;
+        }
+        .sucesso {
+            background: #2ecc71;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+        .rodape {
+            background: #f2e5d8;
+            text-align: center;
+            padding: 12px;
+            font-size: 11px;
+            color: #8e735b;
+        }
+        .badge {
+            background: #e67e22;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .tela {
+            display: block;
+        }
+        .esconder {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="header">
+        <h1>🍕 PIZZA NOSTRA</h1>
+        <p>Sistema de Pedidos • Sabor que conquista</p>
+    </div>
+
+    <!-- TELA 1 - CARDÁPIO -->
+    <div id="telaCardapio" class="conteudo">
+        <h3 style="color:#5a2e1a; margin-bottom:15px;">📋 Nosso Cardápio</h3>
+        <div id="listaPizzas" class="cardapio"></div>
+        <button id="btnIrCarrinho" class="btn-principal">🛒 Ver Carrinho <span id="carrinhoBadge" class="badge">0</span></button>
+    </div>
+
+    <!-- TELA 2 - CARRINHO -->
+    <div id="telaCarrinho" class="conteudo esconder">
+        <h3 style="color:#5a2e1a; margin-bottom:15px;">🛒 Seu Carrinho</h3>
+        <div id="listaCarrinho"></div>
+        <div id="totalCarrinho" class="total">Total: R$ 0,00</div>
+        <button id="btnIrCheckout" class="btn-principal">✅ Finalizar Pedido</button>
+        <button id="btnVoltarCardapio" class="btn-principal btn-voltar">⬅️ Voltar ao Cardápio</button>
+    </div>
+
+    <!-- TELA 3 - CHECKOUT -->
+    <div id="telaCheckout" class="conteudo esconder">
+        <h3 style="color:#5a2e1a; margin-bottom:15px;">📝 Complete seus dados</h3>
+        <div class="grupo">
+            <label>📛 Seu nome:</label>
+            <input type="text" id="inputNome" placeholder="Digite seu nome">
+        </div>
+        <div class="grupo">
+            <label>📍 Endereço de entrega:</label>
+            <input type="text" id="inputEndereco" placeholder="Rua, número, bairro">
+        </div>
+        <div class="grupo">
+            <label>📞 Telefone:</label>
+            <input type="text" id="inputTelefone" placeholder="(11) 99999-9999">
+        </div>
+        <div class="grupo">
+            <label>💳 Forma de pagamento:</label>
+            <select id="selectPagamento">
+                <option>Dinheiro</option>
+                <option>Cartão de Crédito</option>
+                <option>PIX</option>
+            </select>
+        </div>
+        <div class="grupo">
+            <label>📝 Observações:</label>
+            <textarea id="inputObs" rows="2" placeholder="Ex: sem cebola, tocar interfone"></textarea>
+        </div>
+        <button id="btnConfirmarPedido" class="btn-principal">✅ Confirmar Pedido</button>
+        <button id="btnVoltarCarrinho" class="btn-principal btn-voltar">↩️ Voltar ao Carrinho</button>
+    </div>
+
+    <!-- TELA 4 - CONFIRMAÇÃO -->
+    <div id="telaConfirmacao" class="conteudo esconder">
+        <div class="sucesso">✅ PEDIDO REALIZADO COM SUCESSO!</div>
+        <p style="text-align:center; color:#5a2e1a;">
+            🍕 Seu pedido foi enviado para a cozinha!<br>
+            ⏱️ Tempo médio de entrega: 40-50 minutos.<br>
+            ❤️ Obrigado por escolher a Pizza Nostra!
+        </p>
+        <button id="btnNovoPedido" class="btn-principal">🍕 Fazer Novo Pedido</button>
+    </div>
+
+    <div class="rodape">
+        Pizza Nostra - Desde 2025 entregando sabor e amor em cada fatia
+    </div>
+</div>
+
+<script>
+    // LISTA DE PIZZAS
+    const PIZZAS = [
+        { id: 1, nome: "Margherita", preco: 39.90, descricao: "Molho de tomate, mussarela, manjericão", emoji: "🍅" },
+        { id: 2, nome: "Pepperoni", preco: 49.90, descricao: "Pepperoni, mussarela, orégano", emoji: "🥓" },
+        { id: 3, nome: "Portuguesa", preco: 54.90, descricao: "Presunto, ovo, cebola, azeitona", emoji: "🥚" },
+        { id: 4, nome: "Quatro Queijos", preco: 58.90, descricao: "Mussarela, provolone, parmesão, gorgonzola", emoji: "🧀" },
+        { id: 5, nome: "Frango com Catupiry", preco: 52.90, descricao: "Frango desfiado, catupiry, milho", emoji: "🐔" },
+        { id: 6, nome: "Calabresa", preco: 48.90, descricao: "Calabresa fatiada, cebola, mussarela", emoji: "🌶️" }
+    ];
+
+    let carrinho = [];
+
+    // FUNÇÕES
+    function salvarCarrinho() {
+        localStorage.setItem("pizzaCarrinho", JSON.stringify(carrinho));
+    }
+
+    function carregarCarrinho() {
+        let salvo = localStorage.getItem("pizzaCarrinho");
+        if (salvo) {
+            carrinho = JSON.parse(salvo);
+        } else {
+            carrinho = [];
+        }
+        atualizarTudo();
+    }
+
+    function atualizarBadge() {
+        let totalItens = 0;
+        for (let item of carrinho) {
+            totalItens += item.quantidade;
+        }
+        let badge = document.getElementById("carrinhoBadge");
+        if (badge) badge.innerText = totalItens;
+    }
+
+    function adicionarPizza(pizza) {
+        let encontrado = false;
+        for (let item of carrinho) {
+            if (item.id === pizza.id) {
+                item.quantidade++;
+                encontrado = true;
+                break;
+            }
+        }
+        if (!encontrado) {
+            carrinho.push({
+                id: pizza.id,
+                nome: pizza.nome,
+                preco: pizza.preco,
+                quantidade: 1,
+                emoji: pizza.emoji
+            });
+        }
+        salvarCarrinho();
+        atualizarTudo();
+        alert("✅ " + pizza.nome + " adicionada ao carrinho!");
+    }
+
+    function removerItem(id) {
+        for (let i = 0; i < carrinho.length; i++) {
+            if (carrinho[i].id === id) {
+                if (carrinho[i].quantidade > 1) {
+                    carrinho[i].quantidade--;
+                } else {
+                    carrinho.splice(i, 1);
+                }
+                break;
+            }
+        }
+        salvarCarrinho();
+        atualizarTudo();
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        for (let item of carrinho) {
+            total += item.preco * item.quantidade;
+        }
+        return total;
+    }
+
+    function mostrarCardapio() {
+        let container = document.getElementById("listaPizzas");
+        if (!container) return;
+        container.innerHTML = "";
+        for (let pizza of PIZZAS) {
+            let div = document.createElement("div");
+            div.className = "pizza";
+            div.innerHTML = `
+                <div class="pizza-emoji">🍕${pizza.emoji}</div>
+                <div class="pizza-info">
+                    <div class="pizza-nome">${pizza.nome}</div>
+                    <div class="pizza-preco">R$ ${pizza.preco.toFixed(2)}</div>
+                    <div class="pizza-desc">${pizza.descricao}</div>
+                </div>
+                <button class="btn-add" data-id="${pizza.id}">+ Adicionar</button>
+            `;
+            container.appendChild(div);
+        }
+        // Eventos dos botões
+        document.querySelectorAll(".btn-add").forEach(btn => {
+            btn.addEventListener("click", function() {
+                let id = parseInt(this.getAttribute("data-id"));
+                let pizza = PIZZAS.find(p => p.id === id);
+                if (pizza) adicionarPizza(pizza);
+            });
+        });
+    }
+
+    function mostrarCarrinho() {
+        let container = document.getElementById("listaCarrinho");
+        let totalSpan = document.getElementById("totalCarrinho");
+        if (!container) return;
+        if (carrinho.length === 0) {
+            container.innerHTML = "<p style='text-align:center; padding:20px;'>🛒 Seu carrinho está vazio</p>";
+            totalSpan.innerText = "Total: R$ 0,00";
+            return;
+        }
+        container.innerHTML = "";
+        for (let item of carrinho) {
+            let div = document.createElement("div");
+            div.className = "carrinho-item";
+            div.innerHTML = `
+                <div>
+                    <strong>🍕 ${item.nome}</strong><br>
+                    ${item.quantidade} x R$ ${item.preco.toFixed(2)} = R$ ${(item.preco * item.quantidade).toFixed(2)}
+                </div>
+                <button class="btn-remover" data-id="${item.id}">🗑️ Remover 1</button>
+            `;
+            container.appendChild(div);
+        }
+        document.querySelectorAll(".btn-remover").forEach(btn => {
+            btn.addEventListener("click", function() {
+                let id = parseInt(this.getAttribute("data-id"));
+                removerItem(id);
+            });
+        });
+        totalSpan.innerText = "Total: R$ " + calcularTotal().toFixed(2);
+    }
+
+    function atualizarTudo() {
+        mostrarCardapio();
+        mostrarCarrinho();
+        atualizarBadge();
+    }
+
+    // TROCAR TELAS
+    function mostrarTela(telaId) {
+        document.getElementById("telaCardapio").classList.add("esconder");
+        document.getElementById("telaCarrinho").classList.add("esconder");
+        document.getElementById("telaCheckout").classList.add("esconder");
+        document.getElementById("telaConfirmacao").classList.add("esconder");
+        document.getElementById(telaId).classList.remove("esconder");
+    }
+
+    function validarCheckout() {
+        let nome = document.getElementById("inputNome").value.trim();
+        let endereco = document.getElementById("inputEndereco").value.trim();
+        let telefone = document.getElementById("inputTelefone").value.trim();
+        if (nome === "") { alert("❌ Digite seu nome"); return false; }
+        if (endereco === "") { alert("❌ Digite seu endereço"); return false; }
+        if (telefone === "") { alert("❌ Digite seu telefone"); return false; }
+        if (carrinho.length === 0) { alert("❌ Seu carrinho está vazio"); return false; }
+        return true;
+    }
+
+    function confirmarPedido() {
+        if (!validarCheckout()) return;
+        let nome = document.getElementById("inputNome").value;
+        let endereco = document.getElementById("inputEndereco").value;
+        let pagamento = document.getElementById("selectPagamento").value;
+        let total = calcularTotal().toFixed(2);
+        alert("🍕 PEDIDO CONFIRMADO!\n\nCliente: " + nome + "\nEndereço: " + endereco + "\nTotal: R$ " + total + "\nPagamento: " + pagamento + "\n\nObrigado pela preferência!");
+        
+        // Limpar carrinho
+        carrinho = [];
+        salvarCarrinho();
+        atualizarTudo();
+        
+        // Limpar campos
+        document.getElementById("inputNome").value = "";
+        document.getElementById("inputEndereco").value = "";
+        document.getElementById("inputTelefone").value = "";
+        document.getElementById("inputObs").value = "";
+        
+        mostrarTela("telaConfirmacao");
+    }
+
+    function novoPedido() {
+        mostrarTela("telaCardapio");
+    }
+
+    // EVENTOS
+    document.getElementById("btnIrCarrinho").onclick = () => mostrarTela("telaCarrinho");
+    document.getElementById("btnVoltarCardapio").onclick = () => mostrarTela("telaCardapio");
+    document.getElementById("btnIrCheckout").onclick = () => {
+        if (carrinho.length === 0) {
+            alert("Adicione pizzas ao carrinho primeiro");
+        } else {
+            mostrarTela("telaCheckout");
+        }
+    };
+    document.getElementById("btnVoltarCarrinho").onclick = () => mostrarTela("telaCarrinho");
+    document.getElementById("btnConfirmarPedido").onclick = confirmarPedido;
+    document.getElementById("btnNovoPedido").onclick = novoPedido;
+
+    // INICIAR
+    carregarCarrinho();
+    mostrarTela("telaCardapio");
+</script>
+</body>
+</html>
